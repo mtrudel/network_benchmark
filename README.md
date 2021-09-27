@@ -1,21 +1,23 @@
 # NetworkBenchmark
 
-**TODO: Add description**
+An application to benchmark the Thousand Island / Bandit & Ranch / Cowboy stacks
 
-## Installation
+The application spins up a Bandit server on port 4001 and a Cowboy server on port 4002, each
+running the same `Echo` plug, which simply echoes the posted body back to the client.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `network_benchmark` to your list of dependencies in `mix.exs`:
+## Running Manually
 
-```elixir
-def deps do
-  [
-    {:network_benchmark, "~> 0.1.0"}
-  ]
-end
-```
+1. Run the server via `iex -S mix`
+2. Run h2load benchmarks like so:
+   ```
+   # Test 128 concurrent connections across 4 client thread each making 16 requests
+   # Each request uploads and then downloads 10k worth of data, so 10G total each way
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/network_benchmark](https://hexdocs.pm/network_benchmark).
+   # Time how long it takes to make 1M such requests
+   h2load -n 1000000 -d random_10k http://localhost:4001 -m 16 -t 4 -c 128
+   h2load -n 1000000 -d random_10k http://localhost:4002 -m 16 -t 4 -c 128
 
+   # Now do it over HTTP/1.1
+   h2load -n 1000000 -d random_10k http://localhost:4001 -m 16 -t 4 -c 128 -h1
+   h2load -n 1000000 -d random_10k http://localhost:4002 -m 16 -t 4 -c 128 -h1
+   ```
