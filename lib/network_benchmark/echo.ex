@@ -4,9 +4,9 @@ defmodule NetworkBenchmark.Echo do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    {:ok, body, conn} = read_body(conn)
-
-    conn
-    |> send_resp(200, body)
+    case read_body(conn) do
+      {:ok, nil, conn} -> send_resp(conn, 204, <<>>)
+      {:ok, body, conn} -> send_resp(conn, 200, body)
+    end
   end
 end
