@@ -42,6 +42,29 @@ benchmarks. All tests are run over cleartext to avoid TLS overhead.
 3. Record the reqs/s from the **finished in x.xs, y.y reqs/s** output
 4. Interpret your results
 
+# Results
+
+The process above was performed in September 2021 based on [this
+version](https://github.com/mtrudel/network_benchmark/tree/7eb7df78c063a21ac21d1ce9f01828b631582252)
+of this repository (bandit 0.4.1, cowboy 2.9.0 as captured in the mix.lock file at that treeish).
+The test was run on a 32 core, 64GB CPU Optimized Droplet from DigitalOcean. Both the client and
+server processes were run on the same system. The results were then broken out by protocol
+& requests / stream and RPS plotted against concurrent connections. The results are
+[here](https://github.com/mtrudel/network_benchmark/blob/0b18a9b299b9619c38d2a70ab967831565121d65/benchmarks-09-2021.pdf)
+and are summarized as follows:
+
+* HTTP/1.1 is about twice as fast as h2c across the board
+* Bandit is anywhere from 2.5x-5.5x faster than Cowboy when dealing with HTTP/1.1 clients
+* Ignoring runs where Cowboy was unable to complete without error, Bandit is anywhere from
+  1.5x-2.3x faster than Cowboy when dealing with h2c clients
+* Bandit seems to exhibit much larger & more variable Time To First Byte (TTFB) meaurements than
+  Cowboy
+* There are significant concurrency setups which Cowboy is unable to handle without error.
+  Extensive accommodation needed to be made for `h2load` was unable to successfully complete a run
+  against a Cowboy server being run with default options
+* In general, these results should be taken with a grain of salt. I'm far from an expert at
+  benchmarking & there are a million things that may be wrong with the results obtained
+
 # License
 
 MIT
