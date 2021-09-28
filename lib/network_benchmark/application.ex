@@ -6,6 +6,8 @@ defmodule NetworkBenchmark.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      {ThousandIsland, handler_module: NetworkBenchmark.BogusTIHTTPServer, port: 5001},
+      {NetworkBenchmark.BogusRanchHTTPServer, port: 5002},
       {Bandit, plug: NetworkBenchmark.Echo, scheme: :http, options: [port: 4001]},
       {Plug.Cowboy, plug: NetworkBenchmark.Echo, scheme: :http, options: [port: 4002]}
     ]
